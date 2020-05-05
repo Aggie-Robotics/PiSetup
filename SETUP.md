@@ -77,7 +77,7 @@ Apt-get is the linux package manager, it helps to install things. As such, we sh
 
 `sudo apt-get update`
 
-### Text Editor
+#### Text Editor
 
 Next, you may want to install your favorite text editor, `Vim`. While Raspbian comes preconfigured with `Nano` and `Vi`. While some people may tell you `Nano` is better, its worse, and that opinion is [non debatable](https://i.redd.it/2xl0xqm2yrk01.png).
 
@@ -200,3 +200,112 @@ sudo systemctl start hostapd
 The WIFI network specified by `ssid` should now be visible and should be visible after a `reboot`.
 
 Finally, check the ip address assigned to the pi via `hostname -I`. `192.168.4.1` should be visible, in addition to any other interfaces, such as ethernet.
+
+#### Configure Routing
+
+Now we need to setup the routing rules so that connections are sent to the proper location on the pi. This allows the controller to use any ip to connect to the pi's internal server. This step is optional as connecting to the static ip of `192.168.4.1` should always redirect to the pi.
+
+First configure the `IPTables` via:
+
+```
+sudo iptables -t nat -A PREROUTING -p tcp -j DNAT –-to-destination 192.168.4.1
+sudo iptables -A FORWARD -d 192.168.4.1/32 -p TCP -j ACCEPT
+```
+
+The first line redirects any inbound connection to the pi's ip (`192.168.4.1`). The second approves any (and only) connection targeted to the pi.
+
+Next, the `IPTables` configuration needs to be saved to an external file:
+
+`sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"`
+
+Finally, we want to restore this configuration every time the pi reboots. This is done by editing the startup script located at:
+
+`sudo vim /etc/rc.local`
+
+and appending (before the `exit 0`):
+
+`iptables-restore < /etc/iptables.ipv4.nat`
+
+### Installing Apache
+
+For the webserver, we use `Apache`. Apache is a commonly used, well supported open source webserver. It can obtained by:
+
+`sudo apt-get install apache2`
+
+Apache will begin running immediately and will be pre-configured to resume on startup. At this point, you should be able to connect to the pi via a WIFI device and go to any ip address (ex `1.1.1.1`). When doing so, the pi should redirect you to the default Apache page. This should persist though a `reboot`. In fact, things should work without needing to login to the pi.
+
+Note, the default webpage is `/var/www/html/index.html`. Editing this page will edit what is shown.
+
+
+### Installing Python
+
+While Apache manages the html, we also run a `python` server to manage the `websockets`connection. `Websockets` is a communication protocol that provides sockets (data-streaming) behavior over html. 
+
+Python3 should already be installed, but if it isn't:
+
+`sudo apt-get install python3`
+
+However, `PIP`, the python package manager, is not installed by default. This can be fixed via:
+
+`sudo apt-get install python3-pip`
+
+Next, we create an empty python project. Since Apache utilizes `/var/www/html`, creating the directory `/var/www/python` and placing this file in there would allow for both the html and python to be managed by one `git` repository rooted in `/var/www/`. To realize this, create the directory and file:
+
+```
+sudo mkdir /var/www/python
+sudo vim /var/www/python/server.py
+```
+
+Inside the file place:
+
+`print("Python Server Running!")`
+
+Now, to verify everything is running, try:
+
+`python /var/www/python/server.py`
+
+It should print `Python Server Running!`.
+
+Finally, we need to make the python program run on startup. This is accomplished by editing:
+
+`sudo vim /etc/rc.local`
+
+to include 
+
+`python3 /var/www/python/server.py &`
+
+The trailing `&` puts the server in the background, allowing the startup to continue without waiting for the python process to finish. This is especially important in larger python projects where the python server waits for connection.
+
+Now if you `reboot`, somewhere near the end of the boot process, the line `Python Server Running!` should print.
+
+## Conclusion
+
+Thats it. All that remains is to edit the `python/server.py` and `html/index.html` to have the proper functionality.
+
+## Appendix
+
+There are a couple other configuration things that may need to be done to fully configure things:
+
+#### Git
+    
+`Git`, a source control program, allows you to synchronize files across devices. Specifically, this would allow software development on a more refined text editor on a laptop and transfer of the files later. To get `Git`:
+
+`sudo apt-get install git`
+
+`Github` is a free `Git` service.
+
+#### Python Packages
+
+There are two python packages that are utilized pretty heavily in our software development. You will likely need to install them at some point, so why not install them now?
+
+##### Websockets
+
+This library provides the websockets interface. 
+
+`pip3 install websockets`
+
+##### Adafruit Motor_kit
+
+This library interfaces with Adafruit motorshield and allows for the control of the motors. 
+
+`pip3 install adafruit-circuitpython-motorkit`
