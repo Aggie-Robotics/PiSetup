@@ -18,6 +18,7 @@ Flashing the sd card is a relatively standard operation. First, download the lat
 Using the `Raspberry Pi Imager`, select `Use Custom Image` and navigate to the image you downloaded. Then write the image to the SD card. The pi is now configured.
 
 The image has `SSH` enabled. The username and password are `pi` and `raspberry` respectively.
+The image creates a Wifi network with name `RobotPi0` and password `0123456789`.
 
 Note, the image has had its file system reduced to save space. While the image has around 500 mb allocated space available, more space may be required. If your SD card has more storage (it should), you can expand the file system. This is done via the command:
 
