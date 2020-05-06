@@ -7,13 +7,25 @@ Initial setup of the pi can be accomplished in one of two ways. Both are detaile
 1. Via Pre-Configured Image
 1. Via Manual Setup
 
+In either case, you will need the `RaspberryPi Imager` available [here](https://www.raspberrypi.org/downloads/). This utility configures os images (think copies) onto the SD card. You can read more about it [here](https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/).
+
 ## Via Pre-Configured Image
 
 This is by far the easier of the two methods. An image of the pi following the conclusion of manual setup is provided in this repo. Simply download that image and flash the sd card. Then, the configured cad can be inserted into the pi and all the setup should be complete. 
 
-#### TODO - can use pi imager instead right?
+Flashing the sd card is a relatively standard operation. First, download the latest binary image file from the releases section of github. This file is a compressed disk image. It is around `1 GB` compressed and `2.7 GB` uncompressed.
 
-Flashing the sd card is a relatively standard operation. For Windows, this is generally done via `Win32 Disk Imager`; for Linux/Mac, via the terminal. The exact commands and steps are available throughout the internet, but we have found [this tutorial](https://magpi.raspberrypi.org/articles/back-up-raspberry-pi) particularly helpful.
+Using the `Raspberry Pi Imager`, select `Use Custom Image` and navigate to the image you downloaded. Then write the image to the SD card. The pi is now configured.
+
+The image has `SSH` enabled. The username and password are `pi` and `raspberry` respectively.
+
+Note, the image has had its file system reduced to save space. While the image has around 500 mb allocated space available, more space may be required. If your SD card has more storage (it should), you can expand the file system. This is done via the command:
+
+`sudo raspi-config`
+
+The options are under `7 Advanced Options > A1 Expand Filesystem`. This will expand the file system to fill the SD card, allowing up to the the capacity of the card of data (minus around 2GB for system files). 
+
+Word of warning: not all SD cards are equal. Just because two cards are the same size, say `16 GB`, their actual storage may be slightly different. In this case, if the image is resized to the larger card, it will be unable to be placed on the smaller card. It is possible to resize images down, but this requires a program called `gparted`, a linux utility. That is to say, its complicated to do in Windows.
 
 ## Via Manual Setup
 
@@ -35,7 +47,7 @@ In either scenario, you will need the keyboard and display for the initial confi
 
 ### Operating System Setup
 
-The first step involves configuring the blank OS on the raspberry pi. For this tutorial, we use `Raspbian Lite`, a command line operating system. For this, we need the `Raspberrypi Imager` available [here](https://www.raspberrypi.org/downloads/). This item configures the raw os onto the SD card. You can read more about it [here](https://www.raspberrypi.org/blog/raspberry-pi-imager-imaging-utility/). Simply select `Raspbian Lite ` as the OS (its under `Raspbian (other)`) and write it to the SD card.
+The first step involves configuring the blank OS on the raspberry pi. For this tutorial, we use `Raspbian Lite`, a command line operating system.  Using the `Raspberry Pi Imager`, simply select `Raspbian Lite ` as the OS (its under `Raspbian (other)`) and write it to the SD card.
 
 You should now be able to connect the pi to power and an external display and see the pi terminal. Note the first setup does some extra configuration and mat take some time to complete, however the display should show something immediately.
 
@@ -306,6 +318,6 @@ This library provides the websockets interface.
 
 ##### Adafruit Motor_kit
 
-This library interfaces with Adafruit motorshield and allows for the control of the motors. 
+This library interfaces with Adafruit motor bonnet and allows for the control of the motors. 
 
 `pip3 install adafruit-circuitpython-motorkit`
