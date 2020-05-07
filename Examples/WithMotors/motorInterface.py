@@ -37,8 +37,11 @@ class AdaMotorInterface(MotorInterface):
     kit = None #shared across all instances of AdaMotorInterface
 
     def __init__(self):
-        if(kit == None):
+        try:
+            kit == None
+        except UnboundLocalError:
             #need to only load and construct if actually using
+            #this prevents errors when running not on the pi
             from adafruit_motorkit import MotorKit
             kit = MotorKit()
 
@@ -94,6 +97,7 @@ class VirtualMotorInterface(MotorInterface):
         if(value != None and (value < -1 or value > 1)):
             raise ValueError(f"Illegal throttle Value. Should be float in inclusive range [-1,1] got {value}")
         self.motors[key] = value
+        print(self)
     
     def stop(self):
         #stop all the motors

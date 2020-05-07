@@ -291,6 +291,12 @@ The trailing `&` puts the server in the background, allowing the startup to cont
 
 Now if you `reboot`, somewhere near the end of the boot process, the line `Python Server Running!` should print.
 
+### Enabling I2C
+
+I2C is a communication protocol that is utilized to communicate between the Motor Bonnet and the RaspberryPI. This can be trivially enabled via `sudo raspi-config`. The specific setting is under `5 Interfacing Options > P5 I2C`.
+
+Using the 
+
 ## Conclusion
 
 Thats it. All that remains is to edit the `python/server.py` and `html/index.html` to have the proper functionality.
