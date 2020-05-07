@@ -30,6 +30,7 @@ def buildConnectionHandler(interface):
         #if the socket is closed by the server (i.e. ctrl-c) this is not executed
         print("Connection lost.")
         interface.stop() #stop the motors (for safety)
+        print(interface)
     return connectionHandler
 
 

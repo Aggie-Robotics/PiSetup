@@ -1,4 +1,5 @@
-mySocket = null; //global variable for storing the socket connection
+mySocket = null; //global variable for storing the socket 
+sliderElements = null; //global variable storing the slider elements
 
 //called once on page load
 function initFunction() {
@@ -15,6 +16,10 @@ function initFunction() {
     socket.onerror = onSocketError; //called when error
     socket.onmessage = onSocketReceive; //called each message received
     socket.onclose = onSocketClose; //called each close
+
+    //by caching this search, the web-app should be slightly faster
+    //  not that thats going to matter in this context
+    sliderElements = document.getElementsByClassName("verticalSlider")
 }
 
 //called when the socket establishes a connection to the server
@@ -72,4 +77,27 @@ function setStatus(message, color){
     element = document.getElementById("statusBar");
     element.style.backgroundColor = color;
     element.innerHTML = message;
+}
+
+//called whenever a slider value changes
+// paramter is the id of the calling slider
+function sliderUpdate(sliderIndex){
+    // value = sliderElements[sliderIndex].value
+    // console.log(value)
+
+    send("M" + sliderIndex + sliderElements[sliderIndex].value);
+}
+
+//stops all the motors
+function buttonStop(){
+    send("M00");
+    send("M10");
+    send("M20");
+    send("M30");
+
+    //update the sliders to reflect this change
+    sliderElements[0].value = 0
+    sliderElements[1].value = 0
+    sliderElements[2].value = 0
+    sliderElements[3].value = 0
 }

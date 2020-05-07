@@ -25,6 +25,7 @@ class MotorInterface(ABC):
         raise NotImplementedError
 
     #stop all the motors
+    @abstractmethod
     def stop(self):
         pass
 
@@ -57,8 +58,8 @@ class AdaMotorInterface(MotorInterface):
     
     def stop(self):
         #stop all the motors
-        for motor in self.motors:
-            motor.throttle = None
+        for i in range(len(self.motors)):
+            self.motors[i].throttle = None
 
     def __str__(self):
         s = "["
@@ -96,8 +97,8 @@ class VirtualMotorInterface(MotorInterface):
     
     def stop(self):
         #stop all the motors
-        for motor in self.motors:
-            motor = None
+        for i in range(len(self.motors)):
+            self.motors[i] = None
 
     def __str__(self):
         s = "["
