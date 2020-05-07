@@ -5,7 +5,7 @@ from signal import SIGINT, SIGTERM
 
 #called once per connection
 async def connectionHandler(websocket, path):
-    print("New connection recieved.")
+    print("New connection received.")
     async for message in websocket:
         print(f"Received new message '{message}'")
         await websocket.send(f"ECHO:{message}")

@@ -1,0 +1,26 @@
+#statusBar, #outputBar{
+    display: inline-block;
+    width: 100%;
+    height: 10vh;
+    background-color: white;
+    border: 2px solid black;
+    font-size: 8vh;
+}
+
+#inputBar{
+    display: inline-block;
+    width: 100%;
+    height: 10vh;
+    background-color: white;
+    border: 2px solid black;
+}
+
+#sendButton, #inputField{
+    height: 100%;
+    border: none;
+    background-color: lightgray;
+}
+
+body{
+    height: 100%;
+}
