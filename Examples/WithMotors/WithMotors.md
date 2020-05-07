@@ -4,15 +4,22 @@ This example shows builds on the echo server from `Examples/SkeletonCode`.
 
 This version adds the ability to control the motors via the Adafruit motor shield. The motor power is specified using sliders. 
 
-To download these files, a simple script has been provided. Starting in the `var/www/html` directory, make sure that is is empty using `rm -rf var/www/html/*`. Note, this command will **DELETE EVERYTHING** in that directory. Next, download the script via 
+To download these files, a simple script has been provided. Starting in the `var/www/html` directory, make sure that it is empty using `rm -rf var/www/html/*`. Note, this command will **DELETE EVERYTHING** in that directory. Next, download the script via 
 
 `wget https://raw.githubusercontent.com/Gautreaux/PiSetup/master/Examples/WithMotors/downloadScript.sh`
 
 then, run the script to download the remaining files:
 
-`./downloadScript.sh`
+```
+chmod u+r+x downloadScript.sh
+./downloadScript.sh
+```
 
 There should be six total files at the conclusion of the script. You can check this with `ls -a`
+
+Don't forget to edit the startup script to launch the python server on pi boot.
+
+`sudo vim /etc/rc.local`
 
 ### PyServer
 

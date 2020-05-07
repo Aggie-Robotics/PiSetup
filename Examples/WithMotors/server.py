@@ -20,7 +20,7 @@ def buildConnectionHandler(interface):
                 else:
                     v = float(message[2:])
                 interface[i] = v
-                print(interface) #print the updated interface values
+                # print(interface) #print the updated interface values
             except (ValueError, AssertionError, IndexError):
                 #fall back onto the echo functionality
                 print(f"Received new message '{message}'")
