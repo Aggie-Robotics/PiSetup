@@ -9,28 +9,33 @@ from motorInterface import AdaMotorInterface, VirtualMotorInterface
 def buildConnectionHandler(interface):
     #called once per connection
     async def connectionHandler(websocket, path):
-        print("New connection received.")
-        async for message in websocket:
-            try:
-                assert(message[0] == "M")
-                i = int(message[1])
-                assert(i in [0,1,2,3]) #should preempt the IndexError
-                if(message[2:] == "None"):
-                    v = None
-                else:
-                    v = float(message[2:])
-                interface[i] = v
-                # print(interface) #print the updated interface values
-            except (ValueError, AssertionError, IndexError):
-                #fall back onto the echo functionality
-                print(f"Received new message '{message}'")
-                await websocket.send(f"ECHO:{message}")
+        try:
+            print("New connection received.")
+            async for message in websocket:
+                try:
+                    assert(message[0] == "M")
+                    i = int(message[1])
+                    assert(i in [0,1,2,3]) #should preempt the IndexError
+                    if(message[2:] == "None"):
+                        v = None
+                    else:
+                        v = float(message[2:])
+                    interface[i] = v
+                    # print(interface) #print the updated interface values
+                except (ValueError, AssertionError, IndexError):
+                    #fall back onto the echo functionality
+                    print(f"Received new message '{message}'")
+                    await websocket.send(f"ECHO:{message}")
 
-        #this part is executed after the websocket is closed by the client
-        #if the socket is closed by the server (i.e. ctrl-c) this is not executed
-        print("Connection lost.")
-        interface.stop() #stop the motors (for safety)
-        print(interface)
+            #this part is executed after the websocket is closed by the client
+            #if the socket is closed by the server (i.e. ctrl-c) this is not executed
+            print("Connection lost.")
+            interface.stop() #stop the motors (for safety)
+            print(interface)
+        except ConnectionClosedError:
+            #when the websocket is closed in some abnormal fashion
+            print("Connection closed abnormally.")
+            interface.stop()
     return connectionHandler
 
 

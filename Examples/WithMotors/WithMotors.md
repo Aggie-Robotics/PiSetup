@@ -6,7 +6,9 @@ This version adds the ability to control the motors via the Adafruit motor shiel
 
 To download these files, a simple script has been provided. Starting in the `var/www/html` directory, make sure that it is empty using `rm -rf var/www/html/*`. Note, this command will **DELETE EVERYTHING** in that directory. Next, download the script via 
 
-`wget https://raw.githubusercontent.com/Gautreaux/PiSetup/master/Examples/WithMotors/downloadScript.sh`
+```
+wget https://raw.githubusercontent.com/Gautreaux/PiSetup/master/Examples/WithMotors/downloadScript.sh
+```
 
 then, run the script to download the remaining files:
 
@@ -20,6 +22,12 @@ There should be six total files at the conclusion of the script. You can check t
 Don't forget to edit the startup script to launch the python server on pi boot.
 
 `sudo vim /etc/rc.local`
+
+The command to use is (requires image version 1.0.1 or greater):
+
+```
+cd /var/www/html && sudo python3 server.py 192.168.4.1 8765 1 &
+```
 
 ### PyServer
 
