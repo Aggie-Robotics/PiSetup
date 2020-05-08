@@ -3,6 +3,7 @@ import websockets
 import sys
 from signal import SIGINT, SIGTERM
 from motorInterface import AdaMotorInterface, VirtualMotorInterface
+from time import sleep
 
 #function builder utilizing lambda capture
 #   allows the inner function access to the args of the outer function
@@ -32,7 +33,7 @@ def buildConnectionHandler(interface):
             print("Connection lost.")
             interface.stop() #stop the motors (for safety)
             print(interface)
-        except ConnectionClosedError:
+        except websockets.exceptions.ConnectionClosedError:
             #when the websocket is closed in some abnormal fashion
             print("Connection closed abnormally.")
             interface.stop()
@@ -78,19 +79,29 @@ if __name__ == "__main__":
         print("Using the VirtualMotorInterface")
         interface = VirtualMotorInterface()
 
-    #start the server
-    server = websockets.serve(buildConnectionHandler(interface), host, port)
-    
-    try:
-        #since the connection is asynchronous, we need to hold the program until its finished
-        # under normal circumstances, this means we wait forever
-        asyncio.get_event_loop().run_until_complete(server)
-        asyncio.get_event_loop().run_forever()
-        #any code down here would not be reachable until the server closes its socket
-        # under normal circumstances, this means this code is unreachable
+    failCtr = 0;
+    while(failCtr >=0):
+        try:
+            #start the server
+            server = websockets.serve(buildConnectionHandler(interface), host, port)
+            
+            try:
+                #since the connection is asynchronous, we need to hold the program until its finished
+                # under normal circumstances, this means we wait forever
+                asyncio.get_event_loop().run_until_complete(server)
+                failCtr = -1
+                asyncio.get_event_loop().run_forever()
+                #any code down here would not be reachable until the server closes its socket
+                # under normal circumstances, this means this code is unreachable
 
-    except KeyboardInterrupt:
-        #the interrupt was fired (ctrl-c), time to exit
-        #note, the interrupt wont happen till the next async event happens
-        print("Exiting via KeyboardInterrupt")
-        exit(-1)
+            except KeyboardInterrupt:
+                #the interrupt was fired (ctrl-c), time to exit
+                #note, the interrupt wont happen till the next async event happens
+                print("Exiting via KeyboardInterrupt")
+                exit(-1)
+        except OSError:
+            failCtr+=1
+            if(failCtr > 5):
+                print("Failed too many times, terminating.")
+            else:
+                sleep(5)
