@@ -88,7 +88,8 @@ if __name__ == "__main__":
             try:
                 #since the connection is asynchronous, we need to hold the program until its finished
                 # under normal circumstances, this means we wait forever
-                asyncio.get_event_loop().run_until_complete(server)
+                asyncio.get_event_loop().run_until_complete(server
+                print("server started successfully.")
                 failCtr = -1
                 asyncio.get_event_loop().run_forever()
                 #any code down here would not be reachable until the server closes its socket
@@ -103,5 +104,6 @@ if __name__ == "__main__":
             failCtr+=1
             if(failCtr > 5):
                 print("Failed too many times, terminating.")
+                break
             else:
                 sleep(5)
