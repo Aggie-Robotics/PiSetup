@@ -42,6 +42,8 @@ To transmit the desired motor values to the pi, the following protocol is used:
 
 If any of these rules fail, the message will be treated as an echo message. A validly constructed motor message will not be echoed.
 
+Note: This protocol was made up by me, right now. You could (should) make up any protocol you like.
+
 ### HTML and Sliders
 
 Slider inputs are a (relatively) standard input method for browsers. However, the appearance is not. In the HTML, we make the four sliders fill the horizontal space of the screen (explained later). Touching anywhere on the screen will adjust the closest slider. In the case that you want to change the appearance of the slider: [this tutorial](https://css-tricks.com/styling-cross-browser-compatible-range-inputs-css/) is an excellent starting point.
@@ -51,3 +53,7 @@ Sliders are intended to only be displayed horizontally. However, through the mag
 At the same time, since the slider is rotated in place, it can overlap with the elements above and below it on the page. This can be fixed by manually overriding the position of the element. To accomplish this, the parent element, in this case a `div` is given a fixed height `50vh` or 50% of the page's height. Assuming we want the sliders to fill this height, we set their width to `50vh` as well. For height, the parent element spans the page so `100vw` will work. If we want four slider to fill this, their height needs to be set to `25vw`, 25% of the view width. Now when the rotation is applied, the elements are rotated about their center: horizontally (width) `25vh` to the right and vertically (height) `12.5vw` down as measured from the upper left of the `div`. Then, using `position: absolute;`, the elements are moved to their proper place. Vertically, this is `-12.5vw` (to put the center even with the top of the `div`) and `+25vh` (or half of the height of the `div`). Horizontally, the math is `-25vh` to align with the left edge of the parent `div` plus enough offset, in `vh` to position the sliders horizontally. Since the position is the center of the slider, these values are `12.5vw`, `37.5vw`, `62.5vw`, `87.5vw`.
 
 As an added bonus, since this is all done as percentage of window size, it should work on any browser.
+
+### Websockets
+
+As an added bonus, we add a little code in python and javascript that utilizes a file on the device to configure the javascript websocket connection to look for the port that the py server is listening on. This allows for a more flexible deploy configuration with less errors arising from mis-matched values.

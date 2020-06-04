@@ -48,6 +48,7 @@ if __name__ == "__main__":
     try:
         #since the connection is asynchronous, we need to hold the program until its finished
         # under normal circumstances, this means we wait forever
+        # Note: There is a race condition present in the following lines. See the "wothMotors" example for a solution.
         asyncio.get_event_loop().run_until_complete(server)
         asyncio.get_event_loop().run_forever()
         #any code down here would not be reachable until the server closes its socket
@@ -55,6 +56,6 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         #the interrupt was fired (ctrl-c), time to exit
-        #note, the interrupt wont happen till the next async event happens
+        #note, (sometimes) the interrupt wont happen till the next async event happens
         print("Exiting via KeyboardInterrupt")
         exit(-1)
