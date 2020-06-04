@@ -3,6 +3,7 @@ import websockets
 import sys
 from signal import SIGINT, SIGTERM
 from motorInterface import AdaMotorInterface, VirtualMotorInterface
+from time import sleep
 
 #function builder utilizing lambda capture
 #   allows the inner function access to the args of the outer function
@@ -32,7 +33,7 @@ def buildConnectionHandler(interface):
             print("Connection lost.")
             interface.stop() #stop the motors (for safety)
             print(interface)
-        except ConnectionClosedError:
+        except websockets.exceptions.ConnectionClosedError:
             #when the websocket is closed in some abnormal fashion
             print("Connection closed abnormally.")
             interface.stop()
@@ -78,19 +79,47 @@ if __name__ == "__main__":
         print("Using the VirtualMotorInterface")
         interface = VirtualMotorInterface()
 
-    #start the server
-    server = websockets.serve(buildConnectionHandler(interface), host, port)
-    
-    try:
-        #since the connection is asynchronous, we need to hold the program until its finished
-        # under normal circumstances, this means we wait forever
-        asyncio.get_event_loop().run_until_complete(server)
-        asyncio.get_event_loop().run_forever()
-        #any code down here would not be reachable until the server closes its socket
-        # under normal circumstances, this means this code is unreachable
+    #This outer while loop "solves" the race condition.
+    #More on this at the end of the file.
+    failCtr = 5;
+    while(True):
+        #start the server
+        server = websockets.serve(buildConnectionHandler(interface), host, port)
+        
+        try:
+            #since the connection is asynchronous, we need to hold the program until its finished
+            # under normal circumstances, this means we wait forever
+            asyncio.get_event_loop().run_until_complete(server)
+            print("server started successfully.")
+            failCtr = -1
+            asyncio.get_event_loop().run_forever()
+            #any code down here would not be reachable until the server closes its socket
+            # under normal circumstances, this means this code is unreachable
 
-    except KeyboardInterrupt:
-        #the interrupt was fired (ctrl-c), time to exit
-        #note, the interrupt wont happen till the next async event happens
-        print("Exiting via KeyboardInterrupt")
-        exit(-1)
+        except KeyboardInterrupt:
+            #the interrupt was fired (ctrl-c), time to exit
+            #note, the interrupt wont happen till the next async event happens
+            print("Exiting via KeyboardInterrupt")
+            exit(-1)
+        except OSError as e:
+            failCtr+=1
+            if(failCtr > 5):
+                print("The server startup failed too many times, allowing exception to fire.")
+                print("\tThis may be a result of too many packages slowing down the loading of the network interface.")
+                raise e #allow the error to fire.
+            else:
+                sleep(5)
+
+#About the race condition:
+#The pi has to load packages that give it the ability to accept incoming connections
+#These packages take time to load (both on the pi and within the actual wifi chip)
+#In other threads, the pi continues loading other packages
+#One of these other packages is the rc.local script
+#Which launches this python program in the background
+#It is a frequent occurrence that rc.local happens before the wifi fully loads
+#Which causes a bind failure and an exception
+
+#In the long term, it would be better to register the server as a service that is dependent on wifi
+#Thus, the kernel will not launch it until the wifi is ready, preventing error
+#Futhermore, in the case of a crash, the kernel should be able to relaunch the program
+
