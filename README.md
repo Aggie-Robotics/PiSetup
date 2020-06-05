@@ -6,7 +6,7 @@ This repo outlines a
 
 * [Examples](Examples/Examples.md) - some sample code, models, and explanations
 * [HelpfulLinks](HelpfulLinks.md) - outlines some additional resources that may be helpful
-* [Setup](Setup.md) - how to setup your pi software
+* [Setup](SETUP.md) - how to setup your pi software
 * [SystemOverview](SystemOverview.md) - an overview of the physical components and some troubleshooting
 * [TechnicalFoundation](TechnicalFoundation.md) - a very basic introduction to some of the technical components (Structured very similarly to a glossary)
 
