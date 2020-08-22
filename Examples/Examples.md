@@ -1,6 +1,6 @@
 # Examples
 
-This folder contains a series of minimum functional code examples that should allow for a quick start to development. While it is likely possible to start at the final one and understand the code, it may be easier to progress through them in order. The intended order is `Fundamentals` > `Skeleton Code` > `With Motors`
+This folder contains a series of minimum functional code examples that should allow for a quick background for further development. The intended order is `Fundamentals` > `Skeleton Code` > `With Motors`. For more complete examples, see the `Library` folder.
 
 Sample 3d Models are collected on the [CADExamples](CADExamples.md) page.
 
