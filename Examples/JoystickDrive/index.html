@@ -1,0 +1,16 @@
+<head>
+    <script src = "backend.js"></script>
+    <script src="joystick.js"></script>
+    <script src="hostPort.js"></script>
+    <link rel="stylesheet" href="joystickStyles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+</head>
+
+<body onload="initFunction()" onunload="cleanupFunction()" id="body">
+    <div id="joystickWrapper">
+        <div class="inscribedCircle"><div class="limitCircle"></div></div>
+        <div id="joystickCollider"><!--For tracking input, but not moving while redrawing-->
+            <div id="joystick"></div>
+        </div>
+    </div>
+</body>
