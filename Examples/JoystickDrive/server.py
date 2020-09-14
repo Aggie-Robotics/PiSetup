@@ -50,6 +50,13 @@ def buildConnectionHandler(interface):
     return connectionHandler
 
 
+def writeStatus(message):
+    try:
+        with open('statusfile.js', 'w') as status:
+            print(f'status="Server status: {message}";', file=status)
+    except Exception:
+        pass
+
 #if the python module has been launched as the main one
 if __name__ == "__main__":
     #first, we allow for command line arguments formatted such:
@@ -71,6 +78,8 @@ if __name__ == "__main__":
     except (IndexError, ValueError):
         motorInterfaceType = 0
 
+    writeStatus("server booting")
+
     #next, write the host:port combo to a file that js can read.
     try:
         with open("hostPort.js", 'w') as fileOut:
@@ -78,6 +87,7 @@ if __name__ == "__main__":
             fileOut.write(f"myPort = '{port}';")
         #with open() as syntax automatically closes the file on exit
     except (FileNotFoundError, FileExistsError, OSError) as e:
+        writeStatus("server crashed writing host-port file")
         print("Something went wrong trying to write the hostport.js file. Type:" + str(type(e)))
 
     print(f"Starting Server at {host}:{port}")
@@ -91,7 +101,7 @@ if __name__ == "__main__":
 
     #This outer while loop "solves" the race condition.
     #More on this at the end of the file.
-    failCtr = 5
+    failCtr = 0
     while(True):
         #start the server
         server = websockets.serve(buildConnectionHandler(interface), host, port)
@@ -101,6 +111,7 @@ if __name__ == "__main__":
             # under normal circumstances, this means we wait forever
             asyncio.get_event_loop().run_until_complete(server)
             print("server started successfully.")
+            writeStatus("server started nominally")
             failCtr = -1
             asyncio.get_event_loop().run_forever()
             #any code down here would not be reachable until the server closes its socket
@@ -110,13 +121,16 @@ if __name__ == "__main__":
             #the interrupt was fired (ctrl-c), time to exit
             #note, the interrupt wont happen till the next async event happens
             print("Exiting via KeyboardInterrupt")
+            writeStatus("Exited via keyboard interrupt")
             exit(-1)
         except OSError as e:
             failCtr+=1
-            if(failCtr > 5):
-                print("The server startup failed too many times, allowing exception to fire.")
+            if(failCtr % 10 == 0):
+                print("The server startup failed too many times")
                 print("\tThis may be a result of too many packages slowing down the loading of the network interface.")
-                raise e #allow the error to fire.
+                print(f"\t{e}")
+                # raise e #allow the error to fire.
+                writeStatus(f"Sever bind failure after {failCtr} retries")
             else:
                 sleep(5)
 

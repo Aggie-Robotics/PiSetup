@@ -29,6 +29,9 @@ function initFunction() {
     socket.onmessage = onSocketReceive; //called each message received
     socket.onclose = onSocketClose; //called each close
 
+    if(typeof status != 'undefined'){
+        document.getElementById("statusPrintout").innerHTML = status;
+    }
 }
 
 //called when the socket establishes a connection to the server
