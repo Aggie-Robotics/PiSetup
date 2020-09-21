@@ -2,7 +2,7 @@
 
 1. Download the latest image from the releases tab 
 
-1. Put this image on an sd card via either raspbery pi imager utility or Win32DiskImager
+1. Put this image on an sd card via either raspbery [pi imager utility](https://www.raspberrypi.org/downloads/) or Win32DiskImager
 
 1. Provide power and go for it
 
